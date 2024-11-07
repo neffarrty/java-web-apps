@@ -49,7 +49,7 @@ public class Patient {
 
     @Column(nullable = false)
     @NotNull(message = "Arrival time must be provided")
-    @PastOrPresent()
+    @PastOrPresent
     LocalDateTime arrival;
 
     @Column(nullable = false)

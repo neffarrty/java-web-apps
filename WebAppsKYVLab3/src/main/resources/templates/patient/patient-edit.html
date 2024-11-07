@@ -1,128 +1,129 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <title>Edit patient</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .error {
-            color: red;
-            font-size: 0.75rem;
-            line-height: 1rem;
-        }
-    </style>
-</head>
-<body class="h-screen flex flex-col">
-<header th:insert="~{fragments/header :: header}"></header>
-<main class="m-6 grid place-items-center flex-grow">
-    <form
-            action="#"
-            th:action="@{/patients/{id}(id=${patient.id})}"
-            th:method="patch"
-            th:object="${patient}"
-            class="flex flex-col p-4 rounded-md border min-w-96 [&>:not(:last-child)]:mb-1"
-    >
-        <h1 class="text-2xl font-bold mb-1">Edit patient</h1>
-        <input type="hidden" name="_method" value="PATCH"/>
-        <label>
-            <span>Name</span>
-            <br>
-            <input
-                    type="text"
-                    th:field="*{name}"
-                    th:value="*{name}"
-                    class="w-full border-b focus:outline-none py-2"
+    <head>
+        <title>Edit patient</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .error {
+                color: red;
+                font-size: 0.75rem;
+                line-height: 1rem;
+            }
+        </style>
+    </head>
+    <body class="h-screen flex flex-col">
+        <header th:insert="~{fragments/header :: header}"></header>
+        <main class="m-6 grid place-items-center flex-grow">
+            <form
+                action="#"
+                th:action="@{/patients/{id}(id=${patient.id})}"
+                th:method="patch"
+                th:object="${patient}"
+                class="flex flex-col p-4 rounded-md border min-w-96 [&>:not(:last-child)]:mb-1"
             >
-        </label>
-        <span
-                th:if="${#fields.hasErrors('name')}"
-                th:errorclass="error"
-                th:errors="*{name}">
-        </span>
-        <label>
-            <span>Surname</span>
-            <br>
-            <input
-                    type="text"
-                    th:field="*{surname}"
-                    th:value="*{surname}"
-                    class="w-full border-b focus:outline-none py-2"
-            >
-        </label>
-        <span
-                th:if="${#fields.hasErrors('surname')}"
-                th:errorclass="error"
-                th:errors="*{surname}">
-        </span>
-        <label>
-            <span>Patronymic</span>
-            <br>
-            <input
-                    type="text"
-                    th:field="*{patronymic}"
-                    th:value="*{patronymic}"
-                    class="w-full border-b focus:outline-none py-2"
-            >
-        </label>
-        <span
-                th:if="${#fields.hasErrors('patronymic')}"
-                th:errorclass="error"
-                th:errors="*{patronymic}">
-        </span>
-        <label>
-            <span>Age</span>
-            <br>
-            <input
-                    type="number"
-                    th:field="*{age}"
-                    th:value="*{age}"
-                    class="w-full border-b focus:outline-none py-2"
-            >
-        </label>
-        <span
-                th:if="${#fields.hasErrors('age')}"
-                th:errorclass="error"
-                th:errors="*{age}">
-        </span>
-        <label>
-            <span>Arrival time</span>
-            <br>
-            <input
-                    type="datetime-local"
-                    th:field="*{arrival}"
-                    th:value="*{arrival}"
-                    class="w-full border-b focus:outline-none py-2"
-            >
-        </label>
-        <span
-                th:if="${#fields.hasErrors('arrival')}"
-                th:errorclass="error"
-                th:errors="*{arrival}">
-        </span>
-        <label>
-            <span>Number</span>
-            <br>
-            <input
-                    type="number"
-                    th:field="*{number}"
-                    th:value="*{number}"
-                    class="w-full border-b focus:outline-none py-2"
-            >
-        </label>
-        <span
-                th:if="${#fields.hasErrors('number')}"
-                th:errorclass="error"
-                th:errors="*{number}">
-        </span>
-        <input
-                type="submit"
-                value="Update"
-                class="w-full bg-slate-300 color-white rounded hover:bg-slate-400"
-        />
-        <a th:href="@{patients/}">Back</a>
-    </form>
-</main>
-<footer th:insert="~{fragments/footer :: footer}"></footer>
-</body>
+                <h1 class="text-2xl font-bold mb-1">Edit patient</h1>
+                <input type="hidden" name="_method" value="PATCH"/>
+                <label>
+                    <span>Name</span>
+                    <br>
+                    <input
+                        type="text"
+                        th:field="*{name}"
+                        th:value="*{name}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('name')}"
+                    th:errorclass="error"
+                    th:errors="*{name}">
+                </span>
+                <label>
+                    <span>Surname</span>
+                    <br>
+                    <input
+                        type="text"
+                        th:field="*{surname}"
+                        th:value="*{surname}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('surname')}"
+                    th:errorclass="error"
+                    th:errors="*{surname}">
+                </span>
+                <label>
+                    <span>Patronymic</span>
+                    <br>
+                    <input
+                        type="text"
+                        th:field="*{patronymic}"
+                        th:value="*{patronymic}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('patronymic')}"
+                    th:errorclass="error"
+                    th:errors="*{patronymic}">
+                </span>
+                <label>
+                    <span>Age</span>
+                    <br>
+                    <input
+                        type="number"
+                        th:field="*{age}"
+                        th:value="*{age}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('age')}"
+                    th:errorclass="error"
+                    th:errors="*{age}">
+                </span>
+                <label>
+                    <span>Arrival time</span>
+                    <br>
+                    <input
+                        type="datetime-local"
+                        th:field="*{arrival}"
+                        th:value="${#temporals.format(patient.arrival, 'yyyy-MM-dd') + 'T' + #temporals.format(patient.arrival, 'HH:mm')}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                    <span th:text="${#temporals.format(patient.arrival, 'yyyy-MM-dd''T''HH:mm')}"></span>
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('arrival')}"
+                    th:errorclass="error"
+                    th:errors="*{arrival}">
+                </span>
+                <label>
+                    <span>Number</span>
+                    <br>
+                    <input
+                        type="number"
+                        th:field="*{number}"
+                        th:value="*{number}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('number')}"
+                    th:errorclass="error"
+                    th:errors="*{number}">
+                </span>
+                <input
+                    type="submit"
+                    value="Update"
+                    class="w-full bg-slate-300 color-white rounded hover:bg-slate-400"
+                />
+                <a th:href="@{patients/}">Back</a>
+            </form>
+        </main>
+        <footer th:insert="~{fragments/footer :: footer}"></footer>
+    </body>
 </html>

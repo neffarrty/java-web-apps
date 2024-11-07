@@ -10,6 +10,7 @@ import se.semit.ykovtun.webappskyvlab3.entities.Patient;
 import se.semit.ykovtun.webappskyvlab3.services.HospitalDepartmentService;
 import se.semit.ykovtun.webappskyvlab3.services.PatientService;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -43,6 +44,9 @@ public class PatientController {
     @GetMapping("/edit/{id}")
     public String editPatientForm(@PathVariable int id, Model model) {
         Patient patient = this.patientService.findById(id);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        String formattedArrival = patient.getArrival().format(formatter);
+        model.addAttribute("formattedArrival", formattedArrival);
         model.addAttribute("patient", patient);
         return "patient/patient-edit";
     }
