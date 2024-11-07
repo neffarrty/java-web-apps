@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <title>Create hospital department</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .error {
+                color: red;
+                font-size: 0.75rem;
+                line-height: 1rem;
+            }
+        </style>
+    </head>
+    <body class="h-screen flex flex-col">
+        <header th:insert="~{fragments/header :: header}"></header>
+        <main class="m-6 grid place-items-center flex-grow">
+            <form
+                action="#"
+                th:action="@{/hospital-departments/}"
+                th:method="post"
+                th:object="${department}"
+                class="flex flex-col p-4 rounded-md border min-w-96 [&>:not(:last-child)]:mb-1"
+            >
+                <h1 class="text-2xl font-bold mb-1">Add new hospital department</h1>
+                <label>
+                    <span>Name</span>
+                    <br>
+                    <input
+                        type="text"
+                        th:field="*{name}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('name')}"
+                    th:errorclass="error"
+                    th:errors="*{name}">
+                </span>
+                <label>
+                    <span>Short name</span>
+                    <br>
+                    <input
+                        type="text"
+                        th:field="*{shortName}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('shortName')}"
+                    th:errorclass="error"
+                    th:errors="*{shortName}">
+                </span>
+                <label>
+                    <span>Code building</span>
+                    <br>
+                    <input
+                        type="text"
+                        th:field="*{codeBuilding}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('codeBuilding')}"
+                    th:errorclass="error"
+                    th:errors="*{codeBuilding}">
+                </span>
+                <label>
+                    <span>Floor</span>
+                    <br>
+                    <input
+                        type="number"
+                        th:field="*{floor}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('floor')}"
+                    th:errorclass="error"
+                    th:errors="*{floor}">
+                </span>
+                <label>
+                    <span>Box count</span>
+                    <br>
+                    <input
+                        type="number"
+                        th:field="*{boxCount}"
+                        class="w-full border-b focus:outline-none py-2"
+                    >
+                </label>
+                <span
+                    th:if="${#fields.hasErrors('boxCount')}"
+                    th:errorclass="error"
+                    th:errors="*{boxCount}">
+                </span>
+                <input
+                    type="submit"
+                    value="Create"
+                    class="w-full bg-slate-300 color-white rounded hover:bg-slate-400"
+                />
+                <a th:href="@{/hospital-departments/}">Back</a>
+            </form>
+        </main>
+        <footer th:insert="~{fragments/footer :: footer}"></footer>
+    </body>
+</html>

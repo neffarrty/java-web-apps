@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <title>Patients</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <style>
+            table {
+                width: calc(100% - 1px);
+            }
+            table tr th,
+            table tr td  {
+                outline: #e5e7eb solid 1px;
+            }
+        </style>
+        <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="flex flex-col h-screen">
+        <header th:insert="~{fragments/header :: header}"></header>
+        <section class="mx-6 mt-4 flex justify-between h-8">
+            <a
+                class="bg-slate-400 text-white w-fit rounded p-1 hover:bg-slate-500"
+                th:href="@{/patients/new}"
+            >
+                ADD PATIENT
+            </a>
+            <form
+                action="${pageContext.request.contextPath}/hospital/list"
+                method="GET"
+                onreset="clearSearch(this)"
+                onsubmit="cleanForm(this)"
+                class="inline *:pr-1"
+            >
+                <label>
+                    <span>Sort by</span>
+                    <select name="sort" class="border-b py-1 focus:outline-none">
+                        <option value="">-</option>
+                        <option
+                            value="floor"
+                            th:checked="${param.sort == 'floor '? true: false}"
+                        >
+                            Floor
+                        </option>
+                        <option
+                            value="box-count"
+                            th:checked="${param.sort == 'box-count'? true: false}"
+                        >
+                            Box count
+                        </option>
+                    </select>
+                </label>
+                <label class="mr-4">
+                    <span>DESC</span>
+                    <input
+                        type="checkbox"
+                        name="desc"
+                        th:checked="${param.desc != null ? false: true}"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="text"
+                        name="name"
+                        th:value="${param.name}"
+                        placeholder="Name"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="text"
+                        name="shortname"
+                        th:value="${param.shortname}"
+                        placeholder="Short name"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <input
+                    type="submit"
+                    value="Search"
+                    class="bg-slate-400 rounded text-white p-1 hover:bg-slate-500"
+                >
+                <input
+                    type="reset"
+                    value="Clear"
+                    class="bg-slate-400 rounded text-white p-1 hover:bg-slate-500"
+                >
+            </form>
+        </section>
+        <main class="m-6 flex flex-col flex-grow overflow-y-auto">
+            <table class="w-full border-collapse">
+                <tr class="border *:border *:p-2 sticky top-0 bg-white z-10">
+                    <th scope="col">Full name</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Arrival</th>
+                    <th scope="col">Number</th>
+                    <th scope="col" colspan="2">Actions</th>
+                </tr>
+                <tr th:each="patient: ${patients}" class="hover:bg-slate-200 *:border *:p-2">
+                    <td th:text="${patient.getFullName()}" />
+                    <td th:text="${patient.age}" />
+                    <td th:text="${patient.department.shortName}" />
+                    <td th:text="${#temporals.format(patient.arrival,'dd MMM yyyy hh:mm')}" />
+                    <td th:text="${patient.number}" />
+                    <td class="text-center">
+                        <form
+                            action="#"
+                            th:action="@{/patients/edit/{id}(id=${patient.id})}"
+                            th:object="${patient}"
+                            method="get"
+                            class="inline"
+                        >
+                            <input
+                                type="submit"
+                                class="bg-green-500 text-white rounded p-1 w-full hover:bg-green-600"
+                                value="UPDATE"
+                            >
+                        </form>
+                    </td>
+                    <td class="text-center">
+                        <form
+                            action="#"
+                            th:action="@{/patients/{id}(id=${patient.id})}"
+                            th:method="delete"
+                            class="inline delete-form"
+                        >
+                            <input
+                                type="submit"
+                                class="bg-red-500 text-white rounded p-1 w-full hover:bg-red-600"
+                                onclick="return confirm('Confirm deleting')"
+                                value="DELETE"
+                            >
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </main>
+        <footer th:insert="~{fragments/footer :: footer}"></footer>
+        <script>
+            const cleanForm = (form) => {
+                const inputs = form.querySelectorAll('input, select');
+                inputs.forEach((input) => {
+                    input.name = input.value ? input.name : '';
+                });
+            }
+
+            const clearSearch = (form) => {
+                const inputs = form.querySelectorAll('input, select');
+                form.reset();
+                inputs.forEach((input) => {
+                    input.name = '';
+                });
+                form.submit();
+            }
+        </script>
+    </body>
+</html>
