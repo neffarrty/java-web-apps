@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
     <head>
-        <title>Patients</title>
+        <title>Hospital departments</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <style>
             table {
@@ -12,20 +12,21 @@
                 outline: #e5e7eb solid 1px;
             }
         </style>
-        <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="flex flex-col h-screen">
-        <header th:insert="~{fragments/header :: header}"></header>
+        <header th:insert="~{fragment/header :: header}"></header>
         <section class="mx-6 mt-4 flex justify-between h-8">
             <a
                 class="bg-slate-400 text-white w-fit rounded p-1 hover:bg-slate-500"
-                th:href="@{/patients/new}"
+                th:href="@{/hospital-departments/new}"
             >
-                ADD PATIENT
+                CREATE HOSPITAL DEPARTMENT
             </a>
             <form
-                action="${pageContext.request.contextPath}/hospital/list"
+                action="#"
+                th:action="@{/hospital-departments}"
                 method="GET"
                 onreset="clearSearch(this)"
                 onsubmit="cleanForm(this)"
@@ -35,16 +36,16 @@
                     <span>Sort by</span>
                     <select name="sort" class="border-b py-1 focus:outline-none">
                         <option value="">-</option>
-                        <option
-                            value="floor"
-                            th:checked="${param.sort == 'floor '? true: false}"
-                        >
-                            Floor
-                        </option>
-                        <option
-                            value="box-count"
-                            th:checked="${param.sort == 'box-count'? true: false}"
-                        >
+                            <option
+                                value="floor"
+                                th:checked="${param.sort == 'floor '? true: false}"
+                            >
+                                Floor
+                            </option>
+                            <option
+                                value="box-count"
+                                th:checked="${param.sort == 'box-count'? true: false}"
+                            >
                             Box count
                         </option>
                     </select>
@@ -75,6 +76,20 @@
                         class="border-b py-1 focus:outline-none"
                     >
                 </label>
+<!--                <label>-->
+<!--                    <select th:each="code: ${codes}" name="building" class="border-b py-1 focus:outline-none">-->
+<!--                        <option value="">Code building</option>-->
+<!--                        <option ></option>-->
+<!--                        <c:forEach var="code" items="${requestScope.codes}">-->
+<!--                            <option-->
+<!--                                value="${code}"-->
+<!--                            <c:if test="${code == param.building}">selected</c:if>-->
+<!--                            >-->
+<!--                            <c:out value="${code}"/>-->
+<!--                            </option>-->
+<!--                        </c:forEach>-->
+<!--                    </select>-->
+<!--                </label>-->
                 <input
                     type="submit"
                     value="Search"
@@ -90,24 +105,39 @@
         <main class="m-6 flex flex-col flex-grow overflow-y-auto">
             <table class="w-full border-collapse">
                 <tr class="border *:border *:p-2 sticky top-0 bg-white z-10">
-                    <th scope="col">Full name</th>
-                    <th scope="col">Age</th>
-                    <th scope="col">Department</th>
-                    <th scope="col">Arrival</th>
-                    <th scope="col">Number</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Short name</th>
+                    <th scope="col">Code building</th>
+                    <th scope="col">Floor</th>
+                    <th scope="col">Box count</th>
                     <th scope="col" colspan="2">Actions</th>
                 </tr>
-                <tr th:each="patient: ${patients}" class="hover:bg-slate-200 *:border *:p-2">
-                    <td th:text="${patient.getFullName()}" />
-                    <td th:text="${patient.age}" />
-                    <td th:text="${patient.department.shortName}" />
-                    <td th:text="${#temporals.format(patient.arrival,'dd MMM yyyy hh:mm')}" />
-                    <td th:text="${patient.number}" />
-                    <td class="text-center">
+                <tr th:each="department: ${departments}" class="hover:shadow-lg">
+                    <td
+                        th:text="${department.name}"
+                        class="border p-2"
+                    />
+                    <td
+                        th:text="${department.shortName}"
+                        class="border p-2"
+                    />
+                    <td
+                        th:text="${department.codeBuilding}"
+                        class="border p-2"
+                    />
+                    <td
+                        th:text="${department.floor}"
+                        class="border p-2"
+                    />
+                    <td
+                        th:text="${department.boxCount}"
+                        class="border p-2"
+                    />
+                    <td class="text-center border p-2">
                         <form
                             action="#"
-                            th:action="@{/patients/edit/{id}(id=${patient.id})}"
-                            th:object="${patient}"
+                            th:action="@{/hospital-departments/__${department.id}__/edit}"
+                            th:object="${department}"
                             method="get"
                             class="inline"
                         >
@@ -118,10 +148,10 @@
                             >
                         </form>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center border p-2">
                         <form
                             action="#"
-                            th:action="@{/patients/{id}(id=${patient.id})}"
+                            th:action="@{/hospital-departments/__${department.id}__}"
                             th:method="delete"
                             class="inline delete-form"
                         >
@@ -136,7 +166,7 @@
                 </tr>
             </table>
         </main>
-        <footer th:insert="~{fragments/footer :: footer}"></footer>
+        <footer th:insert="~{fragment/footer :: footer}"></footer>
         <script>
             const cleanForm = (form) => {
                 const inputs = form.querySelectorAll('input, select');

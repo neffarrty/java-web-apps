@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
     <head>
-        <title>Create hospital department</title>
+        <title>Edit hospital department</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+        <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}" />
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             .error {
@@ -14,22 +14,24 @@
         </style>
     </head>
     <body class="h-screen flex flex-col">
-        <header th:insert="~{fragments/header :: header}"></header>
+        <header th:insert="~{fragment/header :: header}"></header>
         <main class="m-6 grid place-items-center flex-grow">
             <form
                 action="#"
-                th:action="@{/hospital-departments/}"
-                th:method="post"
+                th:action="@{/hospital-departments/{id}(id=${department.id})}"
+                th:method="patch"
                 th:object="${department}"
                 class="flex flex-col p-4 rounded-md border min-w-96 [&>:not(:last-child)]:mb-1"
             >
-                <h1 class="text-2xl font-bold mb-1">Add new hospital department</h1>
+                <h1 class="text-2xl font-bold mb-1">Edit hospital department</h1>
+                <input type="hidden" name="_method" value="PATCH"/>
                 <label>
                     <span>Name</span>
                     <br>
                     <input
                         type="text"
                         th:field="*{name}"
+                        th:value="*{name}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
@@ -44,6 +46,7 @@
                     <input
                         type="text"
                         th:field="*{shortName}"
+                        th:value="*{shortName}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
@@ -58,6 +61,7 @@
                     <input
                         type="text"
                         th:field="*{codeBuilding}"
+                        th:value="*{codeBuilding}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
@@ -72,6 +76,7 @@
                     <input
                         type="number"
                         th:field="*{floor}"
+                        th:value="*{floor}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
@@ -86,6 +91,7 @@
                     <input
                         type="number"
                         th:field="*{boxCount}"
+                        th:value="*{boxCount}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
@@ -96,12 +102,12 @@
                 </span>
                 <input
                     type="submit"
-                    value="Create"
+                    value="Update"
                     class="w-full bg-slate-300 color-white rounded hover:bg-slate-400"
                 />
                 <a th:href="@{/hospital-departments/}">Back</a>
             </form>
         </main>
-        <footer th:insert="~{fragments/footer :: footer}"></footer>
+        <footer th:insert="~{fragment/footer :: footer}"></footer>
     </body>
 </html>

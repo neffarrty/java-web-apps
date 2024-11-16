@@ -1,62 +1,67 @@
 package se.semit.ykovtun.webappskyvlab3.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.PositiveOrZero;
-import lombok.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.Check;
+import org.springframework.format.annotation.DateTimeFormat;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * @author Yehor Kovtun, CS-222a
+ * @version 1.0
+ * @since 2024-11-16
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
 @Table(name = "patients")
-@Check(constraints = "")
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id = 0L;
 
     @Column(nullable = false)
-    @NotBlank(message = "Name must be provided")
+    @Check(constraints = "REGEXP_LIKE(name, '^[A-Z][a-z]+$','c') = 1")
+    @Pattern(
+        regexp = "^[A-Z][a-z]+$",
+        message = "Invalid name"
+    )
     String name;
 
     @Column(nullable = false)
-    @NotBlank(message = "Surname must be provided")
+    @Check(constraints = "REGEXP_LIKE(surname, '^[A-Z][a-z]+$','c') = 1")
+    @Pattern(
+            regexp = "^[A-Z][a-z]+$",
+            message = "Invalid surname"
+    )
     String surname;
 
-    @Column(nullable = false)
-    String patronymic;
-
     @Column(columnDefinition = "int default 0")
+    @NotNull(message = "Age must be provided")
     @PositiveOrZero(
-        message = "Age must be positive value"
+        message = "Age must be positive"
     )
     Integer age;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
-    // @JsonIgnoreProperties("patients")
-    // @JsonIgnore()
-    // @JsonBackReference
     HospitalDepartment department;
 
     @Column(nullable = false)
     @NotNull(message = "Arrival time must be provided")
     @PastOrPresent
-    LocalDateTime arrival;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    LocalDateTime arrival = LocalDateTime.now();
 
     @Column(nullable = false)
-    @NotNull(message = "Number must be provided")
+    @NotNull(message = "Room number must be provided")
     Integer number;
 
     public String getFullName() {
-        return name + " " + surname + " " + patronymic;
+        return name + " " + surname;
     }
 }

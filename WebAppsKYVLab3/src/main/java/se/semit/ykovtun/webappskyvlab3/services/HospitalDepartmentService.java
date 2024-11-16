@@ -1,40 +1,25 @@
 package se.semit.ykovtun.webappskyvlab3.services;
 
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import se.semit.ykovtun.webappskyvlab3.entities.HospitalDepartment;
-import se.semit.ykovtun.webappskyvlab3.repositories.HospitalDepartmentRepository;
+import se.semit.ykovtun.webappskyvlab3.entities.Patient;
 
 import java.util.List;
 
-@Service
-@AllArgsConstructor
-public class HospitalDepartmentService {
-    private final HospitalDepartmentRepository repository;
+/**
+ * @author Yehor Kovtun, CS-222a
+ * @version 1.0
+ * @since 2024-11-16
+ */
+public interface HospitalDepartmentService {
+    HospitalDepartment findById(long id);
 
-    public HospitalDepartment findById(long id) {
-        return this.repository.findById(id).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital department doesn't exist")
-        );
-    }
+    List<HospitalDepartment> findAll();
 
-    public List<HospitalDepartment> findAll() {
-        return this.repository.findAll();
-    }
+    HospitalDepartment create(HospitalDepartment department);
 
-    public HospitalDepartment create(HospitalDepartment department) {
-        return this.repository.save(department);
-    }
+    HospitalDepartment update(long id, HospitalDepartment department);
 
-    public HospitalDepartment update(long id, HospitalDepartment department) {
-        department.setId(id);
-        return this.repository.save(department);
-    }
+    void delete(long id);
 
-    public void delete(long id) {
-        HospitalDepartment department = this.findById(id);
-        this.repository.delete(department);
-    }
+    void addPatient(Long id, Patient patient);
 }

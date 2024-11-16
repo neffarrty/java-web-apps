@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * @author Yehor Kovtun, CS-222a
  * @version 1.0
- * @since 2024-10-08
+ * @since 2024-11-16
  */
 @Getter
 @Setter
@@ -28,7 +28,7 @@ public class HospitalDepartment {
     @Check(constraints = "REGEXP_LIKE(name, '^[A-Z][a-z]+(?: [a-zA-Z][a-z]+)*$','c') = 1")
     @Pattern(
         regexp = "^[A-Z][a-z]+(?: [a-zA-Z][a-z]+)*$",
-        message = "Name should start with a capital letter and contain only letters"
+        message = "Invalid name"
     )
     @Size(max = 64, message = "Name shouldn't be greater than 64 characters")
     private String name;
@@ -37,7 +37,7 @@ public class HospitalDepartment {
     @Check(constraints = "REGEXP_LIKE(short_name, '^[A-Z][A-Za-z]+$','c') = 1")
     @Pattern(
         regexp = "^[A-Z][A-Za-z]+$",
-        message = "Short name should start with a capital letter and contain only letters"
+        message = "Invalid short name"
     )
     @Size(max = 16, message = "Short name shouldn't be greater than 16 characters")
     private String shortName;
@@ -68,9 +68,12 @@ public class HospitalDepartment {
     )
     private Integer boxCount;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "department")
-    // @JsonIgnoreProperties("department")
-    // @JsonManagedReference()
+    @OneToMany(
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        mappedBy = "department",
+        orphanRemoval = true
+    )
     private Set<Patient> patients;
 }
 

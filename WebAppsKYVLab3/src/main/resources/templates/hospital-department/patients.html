@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <title>Patients</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <style>
+            table {
+                width: calc(100% - 1px);
+            }
+            table tr th,
+            table tr td  {
+                outline: #e5e7eb solid 1px;
+            }
+        </style>
+        <link rel="shortcut icon" type="image/x-icon" th:href="@{favicon.ico}"/>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="flex flex-col h-screen">
+        <header th:insert="~{fragment/header :: header}"></header>
+        <section class="mx-6 mt-4 flex justify-between h-8">
+            <div>
+                <a
+                    class="bg-slate-400 text-white w-fit rounded p-1 hover:bg-slate-500"
+                    th:href="@{/hospital-departments/__${department.id}__/patients/new}"
+                >
+                    ADD PATIENT
+                </a>
+                <h1
+                    th:text="${department.name}"
+                    class="inline font-bold ml-2 text-slate-400 text-xl"
+                ></h1>
+            </div>
+            <form
+                th:action="@{/hospital-departments/__${department.id}__/patients}"
+                th:method="get"
+                onreset="clearSearch(this)"
+                onsubmit="cleanForm(this)"
+                class="inline *:pr-1"
+            >
+                <label>
+                    <span>Sort by</span>
+                    <select th:name="sort" class="border-b py-1 focus:outline-none">
+                        <option value="">-</option>
+                        <option
+                            th:value="age"
+                            th:checked="${param.sort == 'age'}"
+                        >
+                            Age
+                        </option>
+                        <option
+                            th:value="arrival"
+                            th:checked="${param.sort == 'arrival'}"
+                        >
+                            Arrival time
+                        </option>
+                    </select>
+                </label>
+                <label class="mr-4">
+                    <span>DESC</span>
+                    <input
+                        type="checkbox"
+                        th:name="desc"
+                        th:checked="${param.desc != null}"
+                    >
+                </label>
+                <span th:text="${param.sort}"></span>
+                <label>
+                    <input
+                        type="text"
+                        th:name="name"
+                        th:value="${param.name}"
+                        placeholder="Name"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="text"
+                        th:name="shortname"
+                        th:value="${param.shortname}"
+                        placeholder="Short name"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <input
+                    type="submit"
+                    value="Search"
+                    class="bg-slate-400 rounded text-white p-1 hover:bg-slate-500"
+                >
+                <input
+                    type="reset"
+                    value="Clear"
+                    class="bg-slate-400 rounded text-white p-1 hover:bg-slate-500"
+                >
+            </form>
+        </section>
+        <main class="m-6 flex flex-col flex-grow overflow-y-auto">
+            <table class="w-full border-collapse">
+                <tr class="border *:border *:p-2 sticky top-0 bg-white z-10">
+                    <th scope="col">Full name</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">Arrival time</th>
+                    <th scope="col">Room number</th>
+                    <th scope="col" colspan="2">Actions</th>
+                </tr>
+                <tr th:each="patient: ${department.patients}" class="hover:shadow-lg">
+                    <td
+                        th:text="${patient.getFullName()}"
+                        class="border p-2"
+                    />
+                    <td
+                        th:text="${patient.age}"
+                        class="border p-2"
+                    />
+                    <td
+                        th:text="${#temporals.format(patient.arrival, 'dd.MM.yyyy hh:mm')}"
+                        class="border p-2"
+                    />
+                    <td
+                        th:text="${patient.number}"
+                        class="border p-2"
+                    />
+                    <td class="text-center border p-2">
+                        <form
+                            th:action="@{/patients/edit/__${patient.id}__}"
+                            th:object="${patient}"
+                            method="get"
+                            class="inline"
+                        >
+                            <input
+                                type="submit"
+                                value="UPDATE"
+                                class="bg-green-500 text-white rounded p-1 w-full hover:bg-green-600"
+                            >
+                        </form>
+                    </td>
+                    <td class="text-center border p-2">
+                        <form
+                            th:action="@{/patients/__${patient.id}__}"
+                            th:method="delete"
+                            class="inline delete-form"
+                        >
+                            <input
+                                type="submit"
+                                onclick="return confirm('Confirm deleting')"
+                                value="DELETE"
+                                class="bg-red-500 text-white rounded p-1 w-full hover:bg-red-600"
+                            >
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </main>
+        <footer th:insert="~{fragment/footer :: footer}"></footer>
+        <script>
+            const cleanForm = (form) => {
+                const inputs = form.querySelectorAll('input, select');
+                inputs.forEach((input) => {
+                    input.name = input.value ? input.name : '';
+                });
+            }
+
+            const clearSearch = (form) => {
+                const inputs = form.querySelectorAll('input, select');
+                form.reset();
+                inputs.forEach((input) => {
+                    input.name = '';
+                });
+                form.submit();
+            }
+        </script>
+    </body>
+</html>

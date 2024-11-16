@@ -8,49 +8,42 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import se.semit.ykovtun.webappskyvlab3.entities.Patient;
 import se.semit.ykovtun.webappskyvlab3.services.HospitalDepartmentService;
-import se.semit.ykovtun.webappskyvlab3.services.PatientService;
+import se.semit.ykovtun.webappskyvlab3.services.PatientServiceImpl;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * @author Yehor Kovtun, CS-222a
+ * @version 1.0
+ * @since 2024-11-16
+ */
 @Controller
 @RequestMapping("/patients")
 @AllArgsConstructor
 public class PatientController {
-    private final PatientService patientService;
+    private final PatientServiceImpl patientService;
     private final HospitalDepartmentService departmentService;
 
     @GetMapping("/")
     public String getPatients(Model model) {
         List<Patient> patients = this.patientService.findAll();
         model.addAttribute("patients", patients);
-        return "patient/patients";
-    }
-
-    @GetMapping("/{id}")
-    public String getPatientById(@PathVariable int id, Model model) {
-        Patient patient = this.patientService.findById(id);
-        model.addAttribute("patient", patient);
-        return "patient/patient";
+        return "patient/list";
     }
 
     @GetMapping("/new")
     public String createPatientForm(Model model) {
-        Patient patient = new Patient();
-        model.addAttribute("patient", patient);
-        return "patient/patient-new";
+        model.addAttribute("patient", new Patient());
+        model.addAttribute("departments", departmentService.findAll());
+        return "patient/new";
     }
 
     @GetMapping("/edit/{id}")
     public String editPatientForm(@PathVariable int id, Model model) {
         Patient patient = this.patientService.findById(id);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        String formattedArrival = patient.getArrival().format(formatter);
-        model.addAttribute("formattedArrival", formattedArrival);
         model.addAttribute("patient", patient);
-        return "patient/patient-edit";
+        return "patient/edit";
     }
-
 
     @PostMapping("/")
     public String addPatient(
@@ -58,9 +51,9 @@ public class PatientController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            model.addAttribute("org.springframework.validation.BindingResult.patient", result);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
             model.addAttribute("patient", patient);
-            return "patient/patients";
+            return "patient/new";
         }
         this.patientService.create(patient);
         return "redirect:/patients/";
@@ -70,15 +63,20 @@ public class PatientController {
     public String editPatient(
         @PathVariable long id,
         @Valid @ModelAttribute Patient patient,
-        BindingResult result,
-        Model model
+        BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            model.addAttribute("org.springframework.validation.BindingResult.patient", result);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
             model.addAttribute("patient", patient);
-            return "patient/patient-edit";
+            return "patient/edit";
         }
         this.patientService.update(id, patient);
+        return "redirect:/patients/";
+    }
+
+    @DeleteMapping("/{id}")
+    public String deletePatient(@PathVariable long id) {
+        this.patientService.delete(id);
         return "redirect:/patients/";
     }
 }

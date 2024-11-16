@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
     <head>
-        <title>Edit patient</title>
+        <title>Create hospital department</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             .error {
@@ -14,24 +14,22 @@
         </style>
     </head>
     <body class="h-screen flex flex-col">
-        <header th:insert="~{fragments/header :: header}"></header>
+        <header th:insert="~{fragment/header :: header}"></header>
         <main class="m-6 grid place-items-center flex-grow">
             <form
                 action="#"
-                th:action="@{/patients/{id}(id=${patient.id})}"
-                th:method="patch"
-                th:object="${patient}"
+                th:action="@{/hospital-departments/}"
+                th:method="post"
+                th:object="${department}"
                 class="flex flex-col p-4 rounded-md border min-w-96 [&>:not(:last-child)]:mb-1"
             >
-                <h1 class="text-2xl font-bold mb-1">Edit patient</h1>
-                <input type="hidden" name="_method" value="PATCH"/>
+                <h1 class="text-2xl font-bold mb-1">Add new hospital department</h1>
                 <label>
                     <span>Name</span>
                     <br>
                     <input
                         type="text"
                         th:field="*{name}"
-                        th:value="*{name}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
@@ -41,89 +39,70 @@
                     th:errors="*{name}">
                 </span>
                 <label>
-                    <span>Surname</span>
+                    <span>Short name</span>
                     <br>
                     <input
                         type="text"
-                        th:field="*{surname}"
-                        th:value="*{surname}"
+                        th:field="*{shortName}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
                 <span
-                    th:if="${#fields.hasErrors('surname')}"
+                    th:if="${#fields.hasErrors('shortName')}"
                     th:errorclass="error"
-                    th:errors="*{surname}">
+                    th:errors="*{shortName}">
                 </span>
                 <label>
-                    <span>Patronymic</span>
+                    <span>Code building</span>
                     <br>
                     <input
                         type="text"
-                        th:field="*{patronymic}"
-                        th:value="*{patronymic}"
+                        th:field="*{codeBuilding}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
                 <span
-                    th:if="${#fields.hasErrors('patronymic')}"
+                    th:if="${#fields.hasErrors('codeBuilding')}"
                     th:errorclass="error"
-                    th:errors="*{patronymic}">
+                    th:errors="*{codeBuilding}">
                 </span>
                 <label>
-                    <span>Age</span>
+                    <span>Floor</span>
                     <br>
                     <input
                         type="number"
-                        th:field="*{age}"
-                        th:value="*{age}"
+                        th:field="*{floor}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
                 <span
-                    th:if="${#fields.hasErrors('age')}"
+                    th:if="${#fields.hasErrors('floor')}"
                     th:errorclass="error"
-                    th:errors="*{age}">
+                    th:errors="*{floor}">
                 </span>
                 <label>
-                    <span>Arrival time</span>
-                    <br>
-                    <input
-                        type="datetime-local"
-                        th:field="*{arrival}"
-                        th:value="${#temporals.format(patient.arrival, 'yyyy-MM-dd') + 'T' + #temporals.format(patient.arrival, 'HH:mm')}"
-                        class="w-full border-b focus:outline-none py-2"
-                    >
-                    <span th:text="${#temporals.format(patient.arrival, 'yyyy-MM-dd''T''HH:mm')}"></span>
-                </label>
-                <span
-                    th:if="${#fields.hasErrors('arrival')}"
-                    th:errorclass="error"
-                    th:errors="*{arrival}">
-                </span>
-                <label>
-                    <span>Number</span>
+                    <span>Box count</span>
                     <br>
                     <input
                         type="number"
-                        th:field="*{number}"
-                        th:value="*{number}"
+                        th:field="*{boxCount}"
                         class="w-full border-b focus:outline-none py-2"
                     >
                 </label>
                 <span
-                    th:if="${#fields.hasErrors('number')}"
+                    th:if="${#fields.hasErrors('boxCount')}"
                     th:errorclass="error"
-                    th:errors="*{number}">
+                    th:errors="*{boxCount}">
                 </span>
                 <input
                     type="submit"
-                    value="Update"
+                    value="Create"
                     class="w-full bg-slate-300 color-white rounded hover:bg-slate-400"
                 />
-                <a th:href="@{patients/}">Back</a>
+                <span th:if="${error}" class="error" th:text="${error}"></span>
+                <a th:href="@{/hospital-departments/}">Back</a>
             </form>
         </main>
-        <footer th:insert="~{fragments/footer :: footer}"></footer>
+        <footer th:insert="~{fragment/footer :: footer}"></footer>
     </body>
 </html>

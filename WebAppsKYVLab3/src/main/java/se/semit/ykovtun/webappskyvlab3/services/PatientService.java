@@ -1,54 +1,21 @@
 package se.semit.ykovtun.webappskyvlab3.services;
 
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import se.semit.ykovtun.webappskyvlab3.entities.HospitalDepartment;
 import se.semit.ykovtun.webappskyvlab3.entities.Patient;
-import se.semit.ykovtun.webappskyvlab3.repositories.HospitalDepartmentRepository;
-import se.semit.ykovtun.webappskyvlab3.repositories.PatientRepository;
-
 import java.util.List;
 
-@Service
-@AllArgsConstructor
-public class PatientService {
-    private final PatientRepository patientRepository;
-    private final HospitalDepartmentRepository departmentRepository;
+/**
+ * @author Yehor Kovtun, CS-222a
+ * @version 1.0
+ * @since 2024-11-16
+ */
+public interface PatientService {
+    List<Patient> findAll();
 
-    public List<Patient> findAll() {
-        return this.patientRepository.findAll();
-    }
+    Patient findById(long id);
 
-    public Patient findById(long id) {
-        return this.patientRepository.findById(id).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient doesn't exist")
-        );
-    }
+    Patient create(Patient patient);
 
-    public Patient create(Patient patient) {
-        if (patient.getDepartment() != null && patient.getDepartment().getId() != null) {
-            HospitalDepartment department = departmentRepository
-                .findById(patient.getDepartment().getId())
-                .orElseThrow(
-                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital department doesn't exist")
-                );
+    Patient update(long id, Patient patient);
 
-            patient.setDepartment(department);
-        }
-
-        return patientRepository.save(patient);
-    }
-
-    public Patient update(long id, Patient patient) {
-        this.findById(id);
-        patient.setId(id);
-        return this.patientRepository.save(patient);
-    }
-
-    public void delete(long id) {
-        Patient patient = this.findById(id);
-        this.patientRepository.delete(patient);
-    }
+    void delete(long id);
 }

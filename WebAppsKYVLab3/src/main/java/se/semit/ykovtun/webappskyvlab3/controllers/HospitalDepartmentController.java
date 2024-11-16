@@ -7,10 +7,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import se.semit.ykovtun.webappskyvlab3.entities.HospitalDepartment;
+import se.semit.ykovtun.webappskyvlab3.entities.Patient;
 import se.semit.ykovtun.webappskyvlab3.services.HospitalDepartmentService;
 
-import java.util.List;
-
+/**
+ * @author Yehor Kovtun, CS-222a
+ * @version 1.0
+ * @since 2024-11-16
+ */
 @Controller
 @RequestMapping(path = "/hospital-departments")
 @AllArgsConstructor
@@ -19,30 +23,36 @@ public class HospitalDepartmentController {
 
     @GetMapping("/")
     public String listHospitalDepartments(Model model) {
-        List<HospitalDepartment> departments = service.findAll();
-        model.addAttribute("departments", departments);
-        return "hospital-department/hospital-departments";
+        model.addAttribute("departments", service.findAll());
+        return "hospital-department/list";
     }
 
-    @GetMapping("/{id}")
-    public String getHospitalDepartment(@PathVariable long id, Model model) {
+    @GetMapping("/{id}/patients")
+    public String listPatients(@PathVariable long id, Model model) {
+        model.addAttribute("department", service.findById(id));
+        return "hospital-department/patients";
+    }
+
+    @GetMapping("/{id}/patients/new")
+    public String newPatientForm(@PathVariable long id, Model model) {
         HospitalDepartment department = service.findById(id);
+        Patient patient = new Patient();
+        patient.setDepartment(department);
         model.addAttribute("department", department);
-        return "hospital-department/hospital-department";
+        model.addAttribute("patient", patient);
+        return "hospital-department/new-patient";
     }
 
     @GetMapping("/new")
-    public String createHospitalDepartmentForm(Model model) {
-        HospitalDepartment department = new HospitalDepartment();
-        model.addAttribute("department", department);
-        return "hospital-department/hospital-department-new";
+    public String newHospitalDepartmentForm(Model model) {
+        model.addAttribute("department", new HospitalDepartment());
+        return "hospital-department/new";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/{id}/edit")
     public String editHospitalDepartmentForm(@PathVariable long id, Model model) {
-        HospitalDepartment department = service.findById(id);
-        model.addAttribute("department", department);
-        return "hospital-department/hospital-department-edit";
+        model.addAttribute("department", service.findById(id));
+        return "hospital-department/edit";
     }
 
     @PostMapping("/")
@@ -51,12 +61,38 @@ public class HospitalDepartmentController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            model.addAttribute("org.springframework.validation.BindingResult.department", result);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "department", result);
             model.addAttribute("department", department);
-            return "hospital-department/hospital-department-new";
+            return "hospital-department/new";
         }
-        this.service.create(department);
+
+        try {
+            service.create(department);
+        }
+        catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("department", department);
+            return "hospital-department/new";
+        }
+
         return "redirect:/hospital-departments/";
+    }
+
+    @PostMapping("/{id}/patients")
+    public String addPatient(
+        @PathVariable long id,
+        @Valid @ModelAttribute Patient patient,
+        BindingResult result, Model model
+    ) {
+        if (result.hasErrors()) {
+            HospitalDepartment department = this.service.findById(id);
+            model.addAttribute("department", department);
+            model.addAttribute("patient", patient);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
+            return "hospital-department/new-patient";
+        }
+        service.addPatient(id, patient);
+        return "redirect:/hospital-departments/" + id + "/patients";
     }
 
     @PatchMapping("/{id}")
@@ -66,17 +102,26 @@ public class HospitalDepartmentController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            model.addAttribute("org.springframework.validation.BindingResult.department", result);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "department", result);
             model.addAttribute("department", department);
-            return "hospital-department/hospital-department-edit";
+            return "hospital-department/edit";
         }
-        this.service.update(id, department);
+
+        try {
+            service.update(id, department);
+        }
+        catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("department", department);
+            return "hospital-department/edit";
+        }
+
         return "redirect:/hospital-departments/";
     }
 
     @DeleteMapping("/{id}")
     public String deleteHospitalDepartment(@PathVariable long id) {
-        this.service.delete(id);
+        service.delete(id);
         return "redirect:/hospital-departments/";
     }
 }
