@@ -26,7 +26,7 @@ public class PatientController {
 
     @GetMapping("/")
     public String getPatients(Model model) {
-        List<Patient> patients = this.patientService.findAll();
+        List<Patient> patients = patientService.findAll();
         model.addAttribute("patients", patients);
         return "patient/list";
     }

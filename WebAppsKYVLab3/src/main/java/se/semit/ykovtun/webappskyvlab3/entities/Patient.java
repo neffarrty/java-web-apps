@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "patients")
-@ValidPatientRoom
+// @ValidPatientRoom
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

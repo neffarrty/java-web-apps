@@ -71,8 +71,7 @@ public class HospitalDepartment {
     @OneToMany(
         fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
-        mappedBy = "department",
-        orphanRemoval = true
+        mappedBy = "department"
     )
     private Set<Patient> patients;
 }

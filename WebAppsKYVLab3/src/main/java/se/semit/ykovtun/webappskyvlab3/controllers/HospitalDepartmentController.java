@@ -122,7 +122,6 @@ public class HospitalDepartmentController {
             return "hospital-department/edit-patient";
         }
         patientService.update(patientId, patient);
-        System.out.println("Hello");
         return "redirect:/hospital-departments/" + id + "/patients";
     }
 

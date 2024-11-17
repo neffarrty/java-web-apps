@@ -99,7 +99,7 @@
                     value="Create"
                     class="w-full bg-slate-300 color-white rounded hover:bg-slate-400"
                 />
-                <span th:if="${error}" class="error" th:text="${error}"></span>
+                <span th:if="${error}" class="error" th:text="${error}" />
                 <a th:href="@{/hospital-departments/}">Back</a>
             </form>
         </main>
