@@ -1,4 +1,4 @@
-package se.semit.ykovtun.webappskyvlab3.services;
+package se.semit.ykovtun.webappskyvlab3.services.department;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,12 +42,12 @@ public class HospitalDepartmentServiceImpl implements HospitalDepartmentService 
         if (departmentRepository.existsByShortName(department.getShortName())) {
             throw new IllegalArgumentException("Department already exists");
         }
-        return this.departmentRepository.save(department);
+        return departmentRepository.save(department);
     }
 
     @Override
     public HospitalDepartment update(long id, HospitalDepartment department) {
-        HospitalDepartment old = this.findById(id);
+        HospitalDepartment old = findById(id);
 
         if (departmentRepository.existsByName(department.getName())
                 && !old.getName().equals(department.getName())) {
@@ -58,18 +58,18 @@ public class HospitalDepartmentServiceImpl implements HospitalDepartmentService 
             throw new IllegalArgumentException("Department already exists");
         }
         department.setId(id);
-        return this.departmentRepository.save(department);
+        return departmentRepository.save(department);
     }
 
     @Override
     public void delete(long id) {
-        HospitalDepartment department = this.findById(id);
-        this.departmentRepository.delete(department);
+        HospitalDepartment department = findById(id);
+        departmentRepository.delete(department);
     }
 
     @Override
     public void addPatient(Long id, Patient patient) {
-        HospitalDepartment department = this.findById(id);
+        HospitalDepartment department = findById(id);
         patient.setId(null);
         patient.setDepartment(department);
         patientRepository.save(patient);

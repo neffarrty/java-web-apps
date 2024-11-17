@@ -1,4 +1,4 @@
-package se.semit.ykovtun.webappskyvlab3.services;
+package se.semit.ykovtun.webappskyvlab3.services.department;
 
 import se.semit.ykovtun.webappskyvlab3.entities.HospitalDepartment;
 import se.semit.ykovtun.webappskyvlab3.entities.Patient;

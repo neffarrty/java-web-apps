@@ -103,6 +103,7 @@
             </form>
         </section>
         <main class="m-6 flex flex-col flex-grow overflow-y-auto">
+            <div th:if="departments."></div>
             <table class="w-full border-collapse">
                 <tr class="border *:border *:p-2 sticky top-0 bg-white z-10">
                     <th scope="col">Name</th>
@@ -112,11 +113,20 @@
                     <th scope="col">Box count</th>
                     <th scope="col" colspan="2">Actions</th>
                 </tr>
+                <tr th:if="${departments.size() == 0}">
+                    <td colspan="6" class="text-center p-4 text-gray-500">
+                        No hospital departments in the list
+                    </td>
+                </tr>
                 <tr th:each="department: ${departments}" class="hover:shadow-lg">
                     <td
-                        th:text="${department.name}"
                         class="border p-2"
-                    />
+                    >
+                        <a
+                            th:href="@{/hospital-departments/__${department.id}__/patients}"
+                            th:text="${department.name}"
+                        />
+                    </td>
                     <td
                         th:text="${department.shortName}"
                         class="border p-2"

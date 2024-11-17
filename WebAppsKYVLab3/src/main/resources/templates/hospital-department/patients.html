@@ -12,7 +12,7 @@
                 outline: #e5e7eb solid 1px;
             }
         </style>
-        <link rel="shortcut icon" type="image/x-icon" th:href="@{favicon.ico}"/>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="flex flex-col h-screen">
@@ -103,6 +103,11 @@
                     <th scope="col">Room number</th>
                     <th scope="col" colspan="2">Actions</th>
                 </tr>
+                <tr th:if="${department.patients.size() == 0}">
+                    <td colspan="5" class="text-center p-4 text-gray-500">
+                        No patients in the department
+                    </td>
+                </tr>
                 <tr th:each="patient: ${department.patients}" class="hover:shadow-lg">
                     <td
                         th:text="${patient.getFullName()}"
@@ -117,12 +122,12 @@
                         class="border p-2"
                     />
                     <td
-                        th:text="${patient.number}"
+                        th:text="${patient.room}"
                         class="border p-2"
                     />
                     <td class="text-center border p-2">
                         <form
-                            th:action="@{/patients/edit/__${patient.id}__}"
+                            th:action="@{/hospital-departments/__${department.id}__/patients/__${patient.id}__/edit}"
                             th:object="${patient}"
                             method="get"
                             class="inline"

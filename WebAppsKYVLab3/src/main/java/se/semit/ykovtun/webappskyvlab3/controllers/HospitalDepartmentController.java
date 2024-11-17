@@ -8,7 +8,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import se.semit.ykovtun.webappskyvlab3.entities.HospitalDepartment;
 import se.semit.ykovtun.webappskyvlab3.entities.Patient;
-import se.semit.ykovtun.webappskyvlab3.services.HospitalDepartmentService;
+import se.semit.ykovtun.webappskyvlab3.services.department.HospitalDepartmentService;
+import se.semit.ykovtun.webappskyvlab3.services.patient.PatientServiceImpl;
 
 /**
  * @author Yehor Kovtun, CS-222a
@@ -19,28 +20,41 @@ import se.semit.ykovtun.webappskyvlab3.services.HospitalDepartmentService;
 @RequestMapping(path = "/hospital-departments")
 @AllArgsConstructor
 public class HospitalDepartmentController {
-    private final HospitalDepartmentService service;
+    private final PatientServiceImpl patientService;
+    private final HospitalDepartmentService departmentService;
 
     @GetMapping("/")
     public String listHospitalDepartments(Model model) {
-        model.addAttribute("departments", service.findAll());
+        model.addAttribute("departments", departmentService.findAll());
         return "hospital-department/list";
     }
 
     @GetMapping("/{id}/patients")
     public String listPatients(@PathVariable long id, Model model) {
-        model.addAttribute("department", service.findById(id));
+        model.addAttribute("department", departmentService.findById(id));
         return "hospital-department/patients";
     }
 
     @GetMapping("/{id}/patients/new")
     public String newPatientForm(@PathVariable long id, Model model) {
-        HospitalDepartment department = service.findById(id);
+        HospitalDepartment department = departmentService.findById(id);
         Patient patient = new Patient();
         patient.setDepartment(department);
         model.addAttribute("department", department);
         model.addAttribute("patient", patient);
         return "hospital-department/new-patient";
+    }
+
+    @GetMapping("/{id}/patients/{patientId}/edit")
+    public String editPatientForm(
+        @PathVariable long id,
+        @PathVariable long patientId,
+        Model model
+    ) {
+        model.addAttribute("departments", departmentService.findAll());
+        model.addAttribute("department", departmentService.findById(id));
+        model.addAttribute("patient", patientService.findById(patientId));
+        return "hospital-department/edit-patient";
     }
 
     @GetMapping("/new")
@@ -51,7 +65,7 @@ public class HospitalDepartmentController {
 
     @GetMapping("/{id}/edit")
     public String editHospitalDepartmentForm(@PathVariable long id, Model model) {
-        model.addAttribute("department", service.findById(id));
+        model.addAttribute("department", departmentService.findById(id));
         return "hospital-department/edit";
     }
 
@@ -67,7 +81,7 @@ public class HospitalDepartmentController {
         }
 
         try {
-            service.create(department);
+            departmentService.create(department);
         }
         catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -85,13 +99,30 @@ public class HospitalDepartmentController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            HospitalDepartment department = this.service.findById(id);
-            model.addAttribute("department", department);
+            model.addAttribute("department", departmentService.findById(id));
             model.addAttribute("patient", patient);
             model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
             return "hospital-department/new-patient";
         }
-        service.addPatient(id, patient);
+        departmentService.addPatient(id, patient);
+        return "redirect:/hospital-departments/" + id + "/patients";
+    }
+
+    @PatchMapping("/{id}/patients/{patientId}")
+    public String editPatient(
+        @PathVariable long id,
+        @PathVariable long patientId,
+        @Valid @ModelAttribute Patient patient,
+        BindingResult result, Model model
+    ) {
+        if (result.hasErrors()) {
+            model.addAttribute("department", departmentService.findById(id));
+            model.addAttribute("patient", patient);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
+            return "hospital-department/edit-patient";
+        }
+        patientService.update(patientId, patient);
+        System.out.println("Hello");
         return "redirect:/hospital-departments/" + id + "/patients";
     }
 
@@ -108,7 +139,7 @@ public class HospitalDepartmentController {
         }
 
         try {
-            service.update(id, department);
+            departmentService.update(id, department);
         }
         catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -121,7 +152,7 @@ public class HospitalDepartmentController {
 
     @DeleteMapping("/{id}")
     public String deleteHospitalDepartment(@PathVariable long id) {
-        service.delete(id);
+        departmentService.delete(id);
         return "redirect:/hospital-departments/";
     }
 }

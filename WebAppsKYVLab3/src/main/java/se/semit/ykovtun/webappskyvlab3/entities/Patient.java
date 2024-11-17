@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import org.hibernate.annotations.Check;
 import org.springframework.format.annotation.DateTimeFormat;
 import lombok.*;
+import se.semit.ykovtun.webappskyvlab3.annotations.ValidPatientRoom;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "patients")
+@ValidPatientRoom
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +37,8 @@ public class Patient {
     @Column(nullable = false)
     @Check(constraints = "REGEXP_LIKE(surname, '^[A-Z][a-z]+$','c') = 1")
     @Pattern(
-            regexp = "^[A-Z][a-z]+$",
-            message = "Invalid surname"
+        regexp = "^[A-Z][a-z]+$",
+        message = "Invalid surname"
     )
     String surname;
 
@@ -59,7 +61,7 @@ public class Patient {
 
     @Column(nullable = false)
     @NotNull(message = "Room number must be provided")
-    Integer number;
+    Integer room;
 
     public String getFullName() {
         return name + " " + surname;

@@ -1,4 +1,4 @@
-package se.semit.ykovtun.webappskyvlab3.services;
+package se.semit.ykovtun.webappskyvlab3.services.patient;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,12 +24,12 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public List<Patient> findAll() {
-        return this.patientRepository.findAll();
+        return patientRepository.findAll();
     }
 
     @Override
     public Patient findById(long id) {
-        return this.patientRepository.findById(id).orElseThrow(
+        return patientRepository.findById(id).orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient doesn't exist")
         );
     }
@@ -51,14 +51,14 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Patient update(long id, Patient patient) {
-        this.findById(id);
+        findById(id);
         patient.setId(id);
-        return this.patientRepository.save(patient);
+        return patientRepository.save(patient);
     }
 
     @Override
     public void delete(long id) {
-        Patient patient = this.findById(id);
+        Patient patient = findById(id);
         this.patientRepository.delete(patient);
     }
 }

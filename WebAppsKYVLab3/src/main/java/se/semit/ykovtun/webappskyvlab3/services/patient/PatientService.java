@@ -1,4 +1,4 @@
-package se.semit.ykovtun.webappskyvlab3.services;
+package se.semit.ykovtun.webappskyvlab3.services.patient;
 
 import se.semit.ykovtun.webappskyvlab3.entities.Patient;
 import java.util.List;

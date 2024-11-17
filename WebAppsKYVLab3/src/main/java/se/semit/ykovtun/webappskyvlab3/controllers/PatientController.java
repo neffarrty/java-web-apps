@@ -7,8 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import se.semit.ykovtun.webappskyvlab3.entities.Patient;
-import se.semit.ykovtun.webappskyvlab3.services.HospitalDepartmentService;
-import se.semit.ykovtun.webappskyvlab3.services.PatientServiceImpl;
+import se.semit.ykovtun.webappskyvlab3.services.department.HospitalDepartmentService;
+import se.semit.ykovtun.webappskyvlab3.services.patient.PatientServiceImpl;
 
 import java.util.List;
 
@@ -38,10 +38,10 @@ public class PatientController {
         return "patient/new";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/{id}/edit")
     public String editPatientForm(@PathVariable int id, Model model) {
-        Patient patient = this.patientService.findById(id);
-        model.addAttribute("patient", patient);
+        model.addAttribute("departments", departmentService.findAll());
+        model.addAttribute("patient", patientService.findById(id));
         return "patient/edit";
     }
 

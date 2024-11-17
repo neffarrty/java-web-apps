@@ -18,7 +18,6 @@
         <header th:insert="~{fragment/header :: header}"></header>
         <main class="m-6 grid place-items-center flex-grow">
             <form
-                action="#"
                 th:action="@{/patients/}"
                 th:method="post"
                 th:object="${patient}"
@@ -75,13 +74,13 @@
                         <br>
                         <input
                             type="number"
-                            th:field="*{number}"
+                            th:field="*{room}"
                             class="w-full border-b focus:outline-none py-2"
                         >
                         <span
-                            th:if="${#fields.hasErrors('number')}"
+                            th:if="${#fields.hasErrors('room')}"
                             th:errorclass="error"
-                            th:errors="*{number}">
+                            th:errors="*{room}">
                         </span>
                     </label>
                 </div>

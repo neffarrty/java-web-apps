@@ -35,14 +35,14 @@
                     <select name="sort" class="border-b py-1 focus:outline-none">
                         <option value="">-</option>
                         <option
-                                value="age"
-                                th:checked="${param.sort == 'age '? true: false}"
+                            value="age"
+                            th:checked="${param.sort == 'age '? true: false}"
                         >
                             Age
                         </option>
                         <option
-                                value="arrival"
-                                th:checked="${param.sort == 'arrival'? true: false}"
+                            value="arrival"
+                            th:checked="${param.sort == 'arrival'? true: false}"
                         >
                             Arrival time
                         </option>
@@ -96,6 +96,11 @@
                     <th scope="col">Room number</th>
                     <th scope="col" colspan="2">Actions</th>
                 </tr>
+                <tr th:if="${patients.size() == 0}">
+                    <td colspan="6" class="text-center p-4 text-gray-500">
+                        No patients in the list
+                    </td>
+                </tr>
                 <tr th:each="patient: ${patients}" class="hover:shadow-lg">
                     <td
                         th:text="${patient.getFullName()}"
@@ -106,21 +111,25 @@
                         class="border p-2"
                     />
                     <td
-                        th:text="${patient.department.shortName}"
                         class="border p-2"
-                    />
+                    >
+                        <a
+                            th:href="@{/hospital-departments/__${patient.department.id}__/patients}"
+                            th:text="${patient.department.shortName}"
+                        />
+                    </td>
                     <td
                         th:text="${#temporals.format(patient.arrival,'dd.MM.yyyy hh:mm')}"
                         class="border p-2"
                     />
                     <td
-                        th:text="${patient.number}"
+                        th:text="${patient.room}"
                         class="border p-2"
                     />
                     <td class="text-center border p-2">
                         <form
                             action="#"
-                            th:action="@{/patients/edit/__${patient.id}__}"
+                            th:action="@{/patients/__${patient.id}__/edit}"
                             th:object="${patient}"
                             method="get"
                             class="inline"
@@ -134,8 +143,7 @@
                     </td>
                     <td class="text-center border p-2">
                         <form
-                            action="#"
-                            th:action="@{/patients/{id}(id=${patient.id})}"
+                            th:action="@{/patients/__${patient.id}__}"
                             th:method="delete"
                             class="inline delete-form"
                         >
