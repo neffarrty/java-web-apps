@@ -1,6 +1,6 @@
 <div
-        th:fragment="header"
-        class="flex justify-between items-center bg-slate-500 text-white py-4 px-6 shadow-md sticky top-0 z-10"
+    th:fragment="header"
+    class="flex justify-between items-center bg-slate-500 text-white py-4 px-6 shadow-md sticky top-0 z-10"
 >
     <div class="flex items-center space-x-4 w-1/2">
         <h1 class="text-lg font-bold">Hospital Departments Management System</h1>
@@ -9,5 +9,5 @@
             <a th:href="@{/patients/}" class="hover:underline">Patients</a>
         </nav>
     </div>
-    <a th:href="@{/login/}" class="text-sm text-gray-200 hover:text-white">Log out</a>
+    <a th:href="@{/login}" class="text-sm text-gray-200 hover:text-white">Log out</a>
 </div>

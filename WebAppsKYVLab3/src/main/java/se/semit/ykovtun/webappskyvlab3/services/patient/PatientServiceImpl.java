@@ -30,22 +30,13 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public Patient findById(long id) {
         return patientRepository.findById(id).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient doesn't exist")
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found")
         );
     }
 
     @Override
     public Patient create(Patient patient) {
-        if (patient.getDepartment() != null && patient.getDepartment().getId() != null) {
-            HospitalDepartment department = departmentRepository
-                .findById(patient.getDepartment().getId())
-                .orElseThrow(
-                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital department doesn't exist")
-                );
-
-            patient.setDepartment(department);
-        }
-
+        this.validatePatientRoom(patient);
         return patientRepository.save(patient);
     }
 
@@ -53,6 +44,7 @@ public class PatientServiceImpl implements PatientService {
     public Patient update(long id, Patient patient) {
         findById(id);
         patient.setId(id);
+        this.validatePatientRoom(patient);
         return patientRepository.save(patient);
     }
 
@@ -60,5 +52,12 @@ public class PatientServiceImpl implements PatientService {
     public void delete(long id) {
         Patient patient = findById(id);
         this.patientRepository.delete(patient);
+    }
+
+    private void validatePatientRoom(Patient patient) {
+        HospitalDepartment department = patient.getDepartment();
+        if (patient.getRoom() > department.getBoxCount()) {
+            throw new IllegalArgumentException("Room number cannot exceed " + department.getBoxCount());
+        }
     }
 }

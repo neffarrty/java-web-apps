@@ -1,6 +1,8 @@
 package se.semit.ykovtun.webappskyvlab3.services.department;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -9,6 +11,7 @@ import se.semit.ykovtun.webappskyvlab3.entities.Patient;
 import se.semit.ykovtun.webappskyvlab3.repositories.HospitalDepartmentRepository;
 import se.semit.ykovtun.webappskyvlab3.repositories.PatientRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +28,7 @@ public class HospitalDepartmentServiceImpl implements HospitalDepartmentService 
     @Override
     public HospitalDepartment findById(long id) {
         return this.departmentRepository.findById(id).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital department doesn't exist")
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hospital department not found")
         );
     }
 
@@ -68,10 +71,21 @@ public class HospitalDepartmentServiceImpl implements HospitalDepartmentService 
     }
 
     @Override
-    public void addPatient(Long id, Patient patient) {
+    public void addPatient(long id, Patient patient) {
         HospitalDepartment department = findById(id);
+
+        if (patient.getRoom() > department.getBoxCount()) {
+            throw new IllegalArgumentException("Room number cannot exceed " + department.getBoxCount());
+        }
+
         patient.setId(null);
         patient.setDepartment(department);
+
         patientRepository.save(patient);
+    }
+
+    @Override
+    public List<String> getAllCodeBuildings() {
+        return departmentRepository.getAllCodeBuildings();
     }
 }

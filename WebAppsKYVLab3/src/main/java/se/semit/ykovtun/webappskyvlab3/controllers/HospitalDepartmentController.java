@@ -24,8 +24,10 @@ public class HospitalDepartmentController {
     private final HospitalDepartmentService departmentService;
 
     @GetMapping("/")
-    public String listHospitalDepartments(Model model) {
+    public String getHospitalDepartments(Model model) {
         model.addAttribute("departments", departmentService.findAll());
+        model.addAttribute("codes", departmentService.getAllCodeBuildings());
+
         return "hospital-department/list";
     }
 
@@ -104,7 +106,17 @@ public class HospitalDepartmentController {
             model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
             return "hospital-department/new-patient";
         }
-        departmentService.addPatient(id, patient);
+
+        try {
+            departmentService.addPatient(id, patient);
+        }
+        catch (IllegalArgumentException e) {
+            model.addAttribute("department", departmentService.findById(id));
+            model.addAttribute("patient", patient);
+            model.addAttribute("error", e.getMessage());
+            return "hospital-department/new-patient";
+        }
+
         return "redirect:/hospital-departments/" + id + "/patients";
     }
 
@@ -116,12 +128,24 @@ public class HospitalDepartmentController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
+            model.addAttribute("departments", departmentService.findAll());
             model.addAttribute("department", departmentService.findById(id));
             model.addAttribute("patient", patient);
             model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
             return "hospital-department/edit-patient";
         }
-        patientService.update(patientId, patient);
+
+        try {
+            patientService.update(patientId, patient);
+        }
+        catch (IllegalArgumentException e) {
+            model.addAttribute("departments", departmentService.findAll());
+            model.addAttribute("department", departmentService.findById(id));
+            model.addAttribute("patient", patient);
+            model.addAttribute("error", e.getMessage());
+            return "hospital-department/edit-patient";
+        }
+
         return "redirect:/hospital-departments/" + id + "/patients";
     }
 
@@ -132,8 +156,8 @@ public class HospitalDepartmentController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "department", result);
             model.addAttribute("department", department);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "department", result);
             return "hospital-department/edit";
         }
 
@@ -153,5 +177,14 @@ public class HospitalDepartmentController {
     public String deleteHospitalDepartment(@PathVariable long id) {
         departmentService.delete(id);
         return "redirect:/hospital-departments/";
+    }
+
+    @DeleteMapping("/{id}/patients/{patientId}")
+    public String deletePatient(
+        @PathVariable long id,
+        @PathVariable long patientId
+    ) {
+        patientService.delete(patientId);
+        return "redirect:/hospital-departments/" + id + "/patients";
     }
 }

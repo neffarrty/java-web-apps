@@ -1,7 +1,10 @@
 package se.semit.ykovtun.webappskyvlab3.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import se.semit.ykovtun.webappskyvlab3.entities.HospitalDepartment;
+
+import java.util.List;
 
 /**
  * @author Yehor Kovtun, CS-222a
@@ -11,4 +14,6 @@ import se.semit.ykovtun.webappskyvlab3.entities.HospitalDepartment;
 public interface HospitalDepartmentRepository extends JpaRepository<HospitalDepartment, Long> {
     boolean existsByName(String name);
     boolean existsByShortName(String shortname);
+    @Query("SELECT DISTINCT hd.codeBuilding FROM HospitalDepartment hd")
+    List<String> getAllCodeBuildings();
 }

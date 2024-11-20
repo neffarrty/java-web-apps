@@ -13,7 +13,7 @@
             }
         </style>
     </head>
-    <body class="h-screen flex flex-col">
+    <body class="h-screen flex flex-col bg-gray-100">
         <header th:insert="~{fragment/header :: header}"></header>
         <main class="m-6 grid place-items-center flex-grow">
             <form
@@ -21,7 +21,7 @@
                 th:action="@{/hospital-departments/}"
                 th:method="post"
                 th:object="${department}"
-                class="flex flex-col p-4 rounded-md border min-w-96 [&>:not(:last-child)]:mb-1"
+                class="flex flex-col p-4 rounded-lg shadow-lg bg-white border min-w-96 [&>:not(:last-child)]:mb-1"
             >
                 <h1 class="text-2xl font-bold mb-1">Add new hospital department</h1>
                 <label>
@@ -97,7 +97,7 @@
                 <input
                     type="submit"
                     value="Create"
-                    class="w-full bg-slate-300 color-white rounded hover:bg-slate-400"
+                    class="w-full bg-blue-600 text-white py-1 mt-1 rounded-md hover:bg-blue-700 transition"
                 />
                 <span th:if="${error}" class="error" th:text="${error}" />
                 <a th:href="@{/hospital-departments/}">Back</a>

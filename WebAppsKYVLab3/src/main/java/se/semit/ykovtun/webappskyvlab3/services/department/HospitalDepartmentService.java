@@ -21,5 +21,7 @@ public interface HospitalDepartmentService {
 
     void delete(long id);
 
-    void addPatient(Long id, Patient patient);
+    void addPatient(long id, Patient patient);
+
+    List<String> getAllCodeBuildings();
 }

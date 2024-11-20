@@ -14,14 +14,14 @@
             }
         </style>
     </head>
-    <body class="h-screen flex flex-col">
+    <body class="h-screen flex flex-col bg-gray-100">
         <header th:insert="~{fragment/header :: header}"></header>
         <main class="m-6 grid place-items-center flex-grow">
             <form
                 th:action="@{/hospital-departments/__${department.id}__/patients/__${patient.id}__}"
                 th:method="patch"
                 th:object="${patient}"
-                class="flex flex-col p-4 rounded-md border min-w-96 [&>:not(:last-child)]:mb-1"
+                class="flex flex-col p-4 rounded-lg shadow-lg bg-white border min-w-96 [&>:not(:last-child)]:mb-1"
             >
                 <h1 class="text-2xl font-bold mb-1">Edit patient</h1>
                 <div class="flex gap-2">
@@ -103,7 +103,7 @@
                     <br>
                     <select
                         th:field="*{department}"
-                        class="w-full border-b focus:outline-none py-2 px-0 bg-whites"
+                        class="w-full border-b focus:outline-none py-2 px-0 bg-white"
                     >
                         <option value="0" class="text-gray-500">
                             Select department
@@ -118,9 +118,12 @@
                 <input
                     type="submit"
                     value="Update"
-                    class="w-full bg-slate-300 color-white rounded hover:bg-slate-400 mt-1"
+                    class="w-full bg-blue-600 text-white py-1 mt-1 rounded-md hover:bg-blue-700 transition"
                 />
-                <a th:href="@{/hospital-departments/__${department.id}__/patients}">Back</a>
+                <span th:if="${error}" class="error" th:text="${error}" />
+                <a th:href="@{/hospital-departments/__${department.id}__/patients}">
+                    Back
+                </a>
             </form>
         </main>
         <footer th:insert="~{fragment/footer :: footer}"></footer>

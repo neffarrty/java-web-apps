@@ -5,7 +5,6 @@ import jakarta.validation.constraints.*;
 import org.hibernate.annotations.Check;
 import org.springframework.format.annotation.DateTimeFormat;
 import lombok.*;
-import se.semit.ykovtun.webappskyvlab3.annotations.ValidPatientRoom;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "patients")
-// @ValidPatientRoom
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,25 +40,26 @@ public class Patient {
     )
     String surname;
 
-    @Column(columnDefinition = "int default 0")
     @NotNull(message = "Age must be provided")
-    @PositiveOrZero(
-        message = "Age must be positive"
-    )
+    @Positive(message = "Age must be positive")
+    @Check(constraints = "age > 0")
     Integer age;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "department_id", nullable = false)
     HospitalDepartment department;
 
     @Column(nullable = false)
     @NotNull(message = "Arrival time must be provided")
     @PastOrPresent
+    @Check(constraints = "arrival <= CURRENT_TIMESTAMP")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     LocalDateTime arrival = LocalDateTime.now();
 
     @Column(nullable = false)
     @NotNull(message = "Room number must be provided")
+    @Positive(message = "Room number must be positive")
+    @Check(constraints = "room > 0")
     Integer room;
 
     public String getFullName() {

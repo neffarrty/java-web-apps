@@ -14,69 +14,77 @@
         </style>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <script src="https://cdn.tailwindcss.com"></script>
+        <script th:src="@{/js/sort-table.js}"></script>
+        <script th:src="@{/js/patients-filter.js}"></script>
     </head>
     <body class="flex flex-col h-screen">
         <header th:insert="~{fragment/header :: header}"></header>
         <section class="mx-6 mt-4 flex justify-between h-8">
             <a
-                class="bg-slate-400 text-white w-fit rounded p-1 hover:bg-slate-500"
+                class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition flex items-center"
                 th:href="@{/patients/new}"
             >
                 ADD PATIENT
             </a>
             <form
-                method="GET"
                 onreset="clearSearch(this)"
-                onsubmit="cleanForm(this)"
-                class="inline *:pr-1"
+                class="inline *:pr-1 flex flex-wrap gap-2 items-center"
             >
                 <label>
-                    <span>Sort by</span>
-                    <select name="sort" class="border-b py-1 focus:outline-none">
-                        <option value="">-</option>
-                        <option
-                            value="age"
-                            th:checked="${param.sort == 'age '? true: false}"
-                        >
-                            Age
-                        </option>
-                        <option
-                            value="arrival"
-                            th:checked="${param.sort == 'arrival'? true: false}"
-                        >
-                            Arrival time
-                        </option>
-                    </select>
-                </label>
-                <label class="mr-4">
-                    <span>DESC</span>
-                    <input
-                        type="checkbox"
-                        name="desc"
-                        th:checked="${param.desc != null ? false: true}"
-                    >
-                </label>
-                <label>
                     <input
                         type="text"
-                        name="name"
-                        th:value="${param.name}"
-                        placeholder="Name"
+                        id="filter-name"
+                        placeholder="Full name"
                         class="border-b py-1 focus:outline-none"
                     >
                 </label>
                 <label>
                     <input
-                        type="text"
-                        name="shortname"
-                        th:value="${param.shortname}"
-                        placeholder="Short name"
+                        type="number"
+                        id="filter-age-from"
+                        placeholder="Min age"
                         class="border-b py-1 focus:outline-none"
+                        min="0"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="number"
+                        id="filter-age-to"
+                        placeholder="Max age"
+                        class="border-b py-1 focus:outline-none"
+                        min="0"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="datetime-local"
+                        id="filter-arrival-from"
+                        placeholder="Arrival from"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="datetime-local"
+                        id="filter-arrival-to"
+                        placeholder="Arrival to"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="number"
+                        id="filter-room"
+                        placeholder="Room number"
+                        class="border-b py-1 focus:outline-none"
+                        min="1"
                     >
                 </label>
                 <input
-                    type="submit"
+                    type="button"
                     value="Search"
+                    onclick="filterTable()"
                     class="bg-slate-400 rounded text-white p-1 hover:bg-slate-500"
                 >
                 <input
@@ -87,94 +95,117 @@
             </form>
         </section>
         <main class="m-6 flex flex-col flex-grow overflow-y-auto">
-            <table class="w-full border-collapse">
-                <tr class="border *:border *:p-2 sticky top-0 bg-white z-10">
-                    <th scope="col">Full name</th>
-                    <th scope="col">Age</th>
-                    <th scope="col">Department</th>
-                    <th scope="col">Arrival time</th>
-                    <th scope="col">Room number</th>
-                    <th scope="col" colspan="2">Actions</th>
-                </tr>
-                <tr th:if="${patients.size() == 0}">
-                    <td colspan="6" class="text-center p-4 text-gray-500">
-                        No patients in the list
-                    </td>
-                </tr>
-                <tr th:each="patient: ${patients}" class="hover:shadow-lg">
-                    <td
-                        th:text="${patient.getFullName()}"
-                        class="border p-2"
-                    />
-                    <td
-                        th:text="${patient.age}"
-                        class="border p-2"
-                    />
-                    <td
-                        class="border p-2"
-                    >
-                        <a
-                            th:href="@{/hospital-departments/__${patient.department.id}__/patients}"
-                            th:text="${patient.department.shortName}"
+            <table
+                class="w-full border-collapse"
+                id="table"
+                data-sort-order="asc"
+                data-sort-column=""
+            >
+                <thead>
+                    <tr class="border *:border *:p-2 sticky top-0 bg-white z-10">
+                        <th
+                            scope="col"
+                            onclick="sortTable(0, this)"
+                            class="cursor-pointer text-left"
+                        >
+                            Full name <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            scope="col"
+                            onclick="sortTable(1, this)"
+                            class="cursor-pointer text-left"
+                        >
+                            Age <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            scope="col"
+                            onclick="sortTable(2, this)"
+                            class="cursor-pointer text-left"
+                        >
+                            Arrival time <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            scope="col"
+                            class="text-left"
+                        >
+                            Room number
+                        </th>
+                        <th
+                            scope="col"
+                            class="text-left"
+                        >
+                            Department</th>
+                        <th
+                            scope="col"
+                            colspan="2"
+                        >
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${patients.size() == 0}">
+                        <td colspan="6" class="text-center p-4 text-gray-500">
+                            No patients in the list
+                        </td>
+                    </tr>
+                    <tr th:each="patient: ${patients}" class="hover:shadow-lg">
+                        <td
+                            th:text="${patient.getFullName()}"
+                            class="border p-2 w-1/6"
                         />
-                    </td>
-                    <td
-                        th:text="${#temporals.format(patient.arrival,'dd.MM.yyyy hh:mm')}"
-                        class="border p-2"
-                    />
-                    <td
-                        th:text="${patient.room}"
-                        class="border p-2"
-                    />
-                    <td class="text-center border p-2">
-                        <form
-                            action="#"
-                            th:action="@{/patients/__${patient.id}__/edit}"
-                            th:object="${patient}"
-                            method="get"
-                            class="inline"
+                        <td
+                            th:text="${patient.age}"
+                            class="border p-2 w-1/6"
+                        />
+                        <td
+                            th:text="${#temporals.format(patient.arrival, 'dd.MM.yyyy HH:mm')}"
+                            class="border p-2 w-1/6"
+                        />
+                        <td
+                            th:text="${patient.room}"
+                            class="border p-2 w-1/6"
+                        />
+                        <td
+                            class="border p-2 w-1/6"
                         >
-                            <input
-                                type="submit"
-                                class="bg-green-500 text-white rounded p-1 w-full hover:bg-green-600"
-                                value="UPDATE"
+                            <a
+                                th:href="@{/hospital-departments/__${patient.department.id}__/patients}"
+                                th:text="${patient.department.shortName}"
+                            />
+                        </td>
+                        <td class="text-center border p-2 w-1/12">
+                            <form
+                                th:action="@{/patients/__${patient.id}__/edit}"
+                                th:object="${patient}"
+                                method="get"
+                                class="inline"
                             >
-                        </form>
-                    </td>
-                    <td class="text-center border p-2">
-                        <form
-                            th:action="@{/patients/__${patient.id}__}"
-                            th:method="delete"
-                            class="inline delete-form"
-                        >
-                            <input
-                                type="submit"
-                                class="bg-red-500 text-white rounded p-1 w-full hover:bg-red-600"
-                                onclick="return confirm('Confirm deleting')"
-                                value="DELETE"
+                                <input
+                                    type="submit"
+                                    class="bg-green-500 text-white rounded p-1 w-full hover:bg-green-600"
+                                    value="UPDATE"
+                                >
+                            </form>
+                        </td>
+                        <td class="text-center border p-2 w-1/12">
+                            <form
+                                th:action="@{/patients/__${patient.id}__}"
+                                th:method="delete"
+                                class="inline delete-form"
                             >
-                        </form>
-                    </td>
-                </tr>
+                                <input
+                                    type="submit"
+                                    class="bg-red-500 text-white rounded p-1 w-full hover:bg-red-600"
+                                    onclick="return confirm('Confirm deleting')"
+                                    value="DELETE"
+                                >
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </main>
         <footer th:insert="~{fragment/footer :: footer}"></footer>
-        <script>
-            const cleanForm = (form) => {
-                const inputs = form.querySelectorAll('input, select');
-                inputs.forEach((input) => {
-                    input.name = input.value ? input.name : '';
-                });
-            }
-
-            const clearSearch = (form) => {
-                const inputs = form.querySelectorAll('input, select');
-                form.reset();
-                inputs.forEach((input) => {
-                    input.name = '';
-                });
-                form.submit();
-            }
-        </script>
     </body>
 </html>

@@ -51,11 +51,23 @@ public class PatientController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
+            System.out.println("hello");
+            model.addAttribute("departments", departmentService.findAll());
             model.addAttribute("patient", patient);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
             return "patient/new";
         }
-        this.patientService.create(patient);
+
+        try {
+            this.patientService.create(patient);
+        }
+        catch (IllegalArgumentException e) {
+            model.addAttribute("departments", departmentService.findAll());
+            model.addAttribute("patient", patient);
+            model.addAttribute("error", e.getMessage());
+            return "patient/new";
+        }
+
         return "redirect:/patients/";
     }
 
@@ -66,11 +78,22 @@ public class PatientController {
         BindingResult result, Model model
     ) {
         if (result.hasErrors()) {
-            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
+            model.addAttribute("departments", departmentService.findAll());
             model.addAttribute("patient", patient);
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "patient", result);
             return "patient/edit";
         }
-        this.patientService.update(id, patient);
+
+        try {
+            this.patientService.update(id, patient);
+        }
+        catch (IllegalArgumentException e) {
+            model.addAttribute("departments", departmentService.findAll());
+            model.addAttribute("patient", patient);
+            model.addAttribute("error", e.getMessage());
+            return "patient/edit";
+        }
+
         return "redirect:/patients/";
     }
 
