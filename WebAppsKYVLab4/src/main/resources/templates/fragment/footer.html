@@ -1,0 +1,16 @@
+<div
+    th:fragment="footer"
+    class="bg-slate-400 text-white flex items-center justify-between py-4 px-6 gap-8"
+>
+    <img
+        class="w-8 h-8"
+        src="https://img.icons8.com/?size=100&id=2572&format=png&color=ffffff"
+        alt="java-icon"
+    >
+    <div class="text-center">
+        <span>Copyright &copy; Yehor Kovtun, </span>
+        <span th:text="${#dates.format(#dates.createNow(),'YYYY')}"></span>
+    </div>
+    <div class="text-sm text-gray-200 font-semibold">SEMIT, KhPI</div>
+</div>
+

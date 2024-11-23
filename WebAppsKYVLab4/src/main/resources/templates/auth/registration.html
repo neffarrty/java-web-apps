@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <title>Register</title>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            function validatePasswords() {
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const errorElement = document.getElementById('password-error');
+                const submitButton = document.getElementById('submit-button');
+
+                if (password !== confirmPassword) {
+                    errorElement.textContent = "Passwords do not match.";
+                    submitButton.disabled = true;
+                } else {
+                    errorElement.textContent = "";
+                    submitButton.disabled = false;
+                }
+            }
+        </script>
+    </head>
+    <body class="h-screen flex flex-col items-center bg-gray-100">
+        <header th:insert="~{fragment/header :: header}" class="w-full"></header>
+        <main class="flex-grow flex items-center justify-center w-full">
+            <form
+                th:action="@{/auth/register}"
+                th:object="${user}"
+                th:method="post"
+                class="flex flex-col p-6 rounded-lg shadow-lg bg-white w-full max-w-xs border h-[420px] flex-shrink-0"
+            >
+                <h1 class="text-xl font-semibold mb-4 text-center text-gray-700">
+                    Register new user
+                </h1>
+                <label class="mb-3">
+                    <span class="text-sm font-medium text-gray-600">
+                        Username
+                    </span>
+                    <input
+                        type="text"
+                        th:field="*{username}"
+                        class="mt-1 w-full border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm"
+                    >
+                </label>
+                <label class="mb-4">
+                    <span class="text-sm font-medium text-gray-600">
+                        Password
+                    </span>
+                    <input
+                        type="password"
+                        id="password"
+                        th:field="*{password}"
+                        class="mt-1 w-full border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm"
+                    >
+                </label>
+                <label>
+                    <span class="text-sm font-medium text-gray-600">
+                        Confirm password
+                    </span>
+                    <input
+                        type="password"
+                        id="confirm-password"
+                        class="mt-1 w-full border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm"
+                        onkeyup="validatePasswords()"
+                    >
+                </label>
+                <div id="password-error" class="text-sm text-red-500 my-2"></div>
+                <div
+                    th:if="${error}"
+                    th:text="${error}"
+                    class="text-sm text-red-500 my-2"
+                />
+                <div class="flex-grow"></div>
+                <input
+                    type="submit"
+                    id="submit-button"
+                    value="Register"
+                    class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+                    disabled
+                >
+                <span class="mt-4 text-center">
+                    Already have an account?
+                    <a
+                            th:href="@{/auth/login}"
+                            class="text-blue-600"
+                    >
+                        Sign in
+                    </a>
+                </span>
+            </form>
+        </main>
+        <footer th:insert="~{fragment/footer :: footer}" class="w-full"></footer>
+    </body>
+</html>
+
+
+

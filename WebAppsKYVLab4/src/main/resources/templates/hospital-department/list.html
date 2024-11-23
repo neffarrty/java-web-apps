@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <title>Hospital departments</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <style>
+            table {
+                width: calc(100% - 1px);
+            }
+            table tr th,
+            table tr td  {
+                outline: #e5e7eb solid 1px;
+            }
+        </style>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script th:src="@{/js/sort-table.js}"></script>
+        <script th:src="@{/js/departments-filter.js}"></script>
+    </head>
+    <body class="flex flex-col h-screen">
+        <header th:insert="~{fragment/header :: header}"></header>
+        <section class="mx-6 mt-4 flex h-8">
+            <a
+                th:href="@{/hospital-departments/new}"
+                sec:authorize="hasRole('ADMIN')"
+                class="bg-blue-600 flex gap-1 text-white p-2 rounded-md hover:bg-blue-700 transition flex items-center"
+            >
+                <span>ADD DEPARTMENT</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"
+                    />
+                </svg>
+            </a>
+            <div class="flex-grow"></div>
+            <form
+                onreset="clearSearch(this)"
+                class="inline *:pr-1 flex flex-wrap gap-2 items-center"
+            >
+                <label>
+                    <input
+                        type="text"
+                        id="filter-name"
+                        placeholder="Name"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <label>
+                    <input
+                        type="text"
+                        id="filter-shortname"
+                        placeholder="Short name"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                </label>
+                <label>
+                    <select
+                        id="filter-code-building"
+                        class="border-b py-1 focus:outline-none"
+                    >
+                        <option value="" class="text-slate-400">Code building: Any</option>
+                        <option
+                            th:each="code : ${codes}"
+                            th:value="${code}"
+                            th:text="${code}"
+                        />
+                    </select>
+                </label>
+                <button
+                    type="button"
+                    onclick="filterTable()"
+                    class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition w-8 h-8"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </button>
+                <input
+                    type="reset"
+                    value="Clear"
+                    class="bg-slate-400 rounded text-white p-1 hover:bg-slate-500"
+                >
+            </form>
+        </section>
+        <main class="m-6 flex flex-col flex-grow overflow-y-auto">
+            <table
+                class="w-full border-collapse"
+                id="table"
+                data-sort-order="asc"
+                data-sort-column=""
+            >
+                <thead>
+                    <tr class="border *:border *:p-2 sticky top-0 bg-white z-10">
+                        <th
+                            scope="col"
+                            onclick="sortTable(0, this)"
+                            class="cursor-pointer text-left"
+                        >
+                            Name <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            onclick="sortTable(1, this)"
+                            class="cursor-pointer text-left"
+                            scope="col"
+                        >
+                            Short name <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            scope="col"
+                            class="text-left"
+                        >
+                            Code building <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            scope="col"
+                            class="text-left"
+                        >
+                            Floor
+                        </th>
+                        <th
+                            onclick="sortTable(4, this)"
+                            class="cursor-pointer text-left"
+                            scope="col"
+                        >
+                            Box count <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            onclick="sortTable(5, this)"
+                            class="cursor-pointer text-left"
+                            scope="col"
+                        >
+                            Number of patients <span class="sort-indicator"></span>
+                        </th>
+                        <th
+                            sec:authorize="hasRole('ADMIN')"
+                            scope="col"
+                            colspan="2"
+                        >
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${departments.size() == 0}">
+                        <td colspan="6" class="text-center p-4 text-gray-500">
+                            No hospital departments in the list
+                        </td>
+                    </tr>
+                    <tr th:each="department: ${departments}" class="hover:shadow-lg">
+                        <td
+                            class="border p-2"
+                        >
+                            <a
+                                th:href="@{/hospital-departments/__${department.id}__/patients}"
+                                th:text="${department.name}"
+                            />
+                        </td>
+                        <td
+                            th:text="${department.shortName}"
+                            class="border p-2"
+                        />
+                        <td
+                            th:text="${department.codeBuilding}"
+                            class="border p-2"
+                        />
+                        <td
+                            th:text="${department.floor}"
+                            class="border p-2"
+                        />
+                        <td
+                            th:text="${department.boxCount}"
+                            class="border p-2"
+                        />
+                        <td
+                            th:text="${department.patients.size()}"
+                            class="border p-2"
+                        />
+                        <td
+                            sec:authorize="hasRole('ADMIN')"
+                            class="text-center border p-2"
+                        >
+                            <form
+                                th:action="@{/hospital-departments/__${department.id}__/edit}"
+                                th:object="${department}"
+                                method="get"
+                                class="inline"
+                            >
+                                <input
+                                    type="submit"
+                                    class="bg-green-500 text-white rounded p-1 w-full hover:bg-green-600"
+                                    value="UPDATE"
+                                >
+                            </form>
+                        </td>
+                        <td
+                            sec:authorize="hasRole('ADMIN')"
+                            class="text-center border p-2"
+                        >
+                            <form
+                                th:action="@{/hospital-departments/__${department.id}__}"
+                                th:method="delete"
+                                class="inline delete-form"
+                            >
+                                <input
+                                    type="submit"
+                                    th:disabled="${department.patients.size() > 0}"
+                                    class="bg-red-500 text-white rounded p-1 w-full hover:bg-red-600 disabled:bg-red-300 disabled:hover:bg-red-300 disabled:cursor-not-allowed"
+                                    onclick="return confirm('Confirm deleting')"
+                                    value="DELETE"
+                                >
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+        <footer th:insert="~{fragment/footer :: footer}"></footer>
+    </body>
+</html>
